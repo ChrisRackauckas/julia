@@ -144,8 +144,10 @@ function authenticate_userpass(creds::UserPasswordCredentials, libgit2credptr::P
 
     username = creds.user
     userpass = creds.pass
+    (username === nothing) && (username = "")
+    (userpass === nothing) && (userpass = "")
     if is_windows()
-        if username === nothing || userpass === nothing || isusedcreds
+        if isempty(username) || isempty(userpass) || isusedcreds
             res = Base.winprompt("Please enter your credentials for '$schema$host'", "Credentials required",
                     username === nothing || isempty(username) ?
                     urlusername : username; prompt_username = true)
@@ -153,11 +155,11 @@ function authenticate_userpass(creds::UserPasswordCredentials, libgit2credptr::P
             username, userpass = Base.get(res)
         end
     else
-        if username === nothing || isusedcreds
+        if isempty(username) || isusedcreds
             username = prompt("Username for '$schema$host'", default = urlusername)
         end
 
-        if userpass === nothing || isusedcreds
+        if isempty(userpass) || isusedcreds
             userpass = prompt("Password for '$schema$username@$host'", password=true)
         end
     end
